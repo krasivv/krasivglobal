@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KRASIV — Elegance, On Chain.</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --midnight: #0a0a0f;
+      --midnight-deep: #060608;
+      --midnight-soft: #10101a;
+      --midnight-mid: #16162a;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-pale: #f5e4b0;
+      --gold-dim: #7a6030;
+      --gold-glow: rgba(201,168,76,0.15);
+      --gold-glow-strong: rgba(201,168,76,0.35);
+      --cream: #f0e6cc;
+      --text-muted: rgba(201,168,76,0.45);
+      --border: rgba(201,168,76,0.18);
+      --border-bright: rgba(201,168,76,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--midnight-deep);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s ease;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid rgba(201,168,76,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: all 0.18s ease;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* NOISE TEXTURE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 24px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: all 0.5s ease;
+    }
+    nav.scrolled {
+      background: rgba(6,6,8,0.92);
+      border-color: var(--border);
+      backdrop-filter: blur(20px);
+      padding: 18px 60px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .nav-logo-img {
+      width: 36px; height: 36px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
+    }
+    .nav-logo-text {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+    }
+    .nav-links {
+      display: flex;
+      gap: 48px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--midnight-deep);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      border: none;
+      padding: 12px 28px;
+      cursor: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-pale) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .nav-cta:hover::before { opacity: 1; }
+    .nav-cta span { position: relative; z-index: 1; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 40px 80px;
+      overflow: hidden;
+    }
+
+    /* HERO BG RADIAL */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ANIMATED GRID */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* FLOATING ORBS */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 400px; height: 400px;
+      top: -100px; left: -100px;
+      background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 350px; height: 350px;
+      bottom: -100px; right: -50px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      animation-delay: -6s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(30px, -20px); }
+      66% { transform: translate(-20px, 20px); }
+    }
+
+    /* HERO LABEL */
+    .hero-label {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.3s forwards;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .hero-label::before, .hero-label::after {
+      content: '';
+      display: block;
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim));
+    }
+    .hero-label::after {
+      background: linear-gradient(90deg, var(--gold-dim), transparent);
+    }
+
+    /* HERO LOGO */
+    .hero-logo-wrap {
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+    .hero-logo {
+      width: 100px; height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 30px rgba(201,168,76,0.4)) drop-shadow(0 0 60px rgba(201,168,76,0.15));
+      animation: logoPulse 4s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(201,168,76,0.4)) drop-shadow(0 0 50px rgba(201,168,76,0.15)); }
+      50% { filter: drop-shadow(0 0 40px rgba(201,168,76,0.6)) drop-shadow(0 0 80px rgba(201,168,76,0.25)); }
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      background: linear-gradient(180deg, var(--gold-pale) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.7s forwards;
+      margin-bottom: 16px;
+    }
+    .hero-ticker {
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 200;
+      letter-spacing: 0.6em;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.9s forwards;
+    }
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(18px, 2.5vw, 26px);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--cream);
+      opacity: 0.7;
+      max-width: 560px;
+      line-height: 1.6;
+      margin-bottom: 60px;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.1s forwards;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.3s forwards;
+    }
+    .btn-primary {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--midnight-deep);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+      background-size: 200% 100%;
+      border: none;
+      padding: 18px 48px;
+      cursor: none;
+      text-decoration: none;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      background-position: 100% 0;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(201,168,76,0.35);
+    }
+    .btn-secondary {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      padding: 18px 40px;
+      cursor: none;
+      text-decoration: none;
+      transition: all 0.4s ease;
+    }
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      background: var(--gold-glow);
+      transform: translateY(-2px);
+    }
+
+    /* HERO SCROLL INDICATOR */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp 1s ease 2s forwards;
+    }
+    .scroll-text {
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold-dim), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      background: var(--midnight-soft);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 80px;
+      overflow: hidden;
+    }
+    .stats-bar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+    }
+    .stat-item {
+      text-align: center;
+      flex: 1;
+      max-width: 180px;
+    }
+    .stat-value {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gold-light);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .stat-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+    }
+
+    /* SECTIONS */
+    section { position: relative; z-index: 1; }
+
+    .section-label {
+      font-size: 9px;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px; height: 1px;
+      background: var(--gold-dim);
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, var(--gold-pale) 0%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+
+    .section-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(240,230,204,0.7);
+      max-width: 520px;
+    }
+
+    /* VISION SECTION */
+    .vision {
+      padding: 120px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .vision-right {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .vision-quote {
+      position: relative;
+      padding: 40px 48px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(201,168,76,0.04) 0%, transparent 100%);
+    }
+    .vision-quote::before {
+      content: '"';
+      position: absolute;
+      top: -20px; left: 32px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px;
+      line-height: 1;
+      color: var(--gold);
+      opacity: 0.4;
+    }
+    .vision-quote p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--cream);
+    }
+
+    /* BRAND PILLARS */
+    .pillars {
+      padding: 100px 60px;
+      background: var(--midnight-soft);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .pillars::before {
+      content: 'KRASIV';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 200px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      color: rgba(201,168,76,0.02);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+    .pillars-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .pillars-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .pillar {
+      padding: 48px 36px;
+      border: 1px solid var(--border);
+      position: relative;
+      transition: all 0.4s ease;
+      background: var(--midnight-deep);
+      overflow: hidden;
+    }
+    .pillar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .pillar:hover { border-color: var(--border-bright); transform: translateY(-4px); }
+    .pillar:hover::before { opacity: 1; }
+    .pillar-number {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold-dim);
+      margin-bottom: 24px;
+    }
+    .pillar-icon {
+      font-size: 28px;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .pillar-title {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+      margin-bottom: 16px;
+    }
+    .pillar-desc {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(240,230,204,0.55);
+      letter-spacing: 0.02em;
+    }
+
+    /* TOKENOMICS */
+    .tokenomics {
+      padding: 120px 60px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .tokenomics-header {
+      margin-bottom: 80px;
+    }
+    .token-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .token-chart-wrap {
+      position: relative;
+    }
+    .token-chart {
+      width: 100%;
+      max-width: 380px;
+    }
+    .token-chart svg {
+      width: 100%;
+      height: auto;
+    }
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .token-table tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .token-table tr:hover { background: rgba(201,168,76,0.04); }
+    .token-table th {
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: left;
+      padding: 14px 0;
+      font-weight: 300;
+    }
+    .token-table td {
+      padding: 18px 0;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--cream);
+    }
+    .token-table td:first-child {
+      color: var(--gold-light);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-style: italic;
+    }
+    .token-table td:last-child {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      color: var(--gold);
+    }
+    .token-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .token-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-light));
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+    .supply-card {
+      margin-top: 40px;
+      padding: 28px 32px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .supply-label {
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .supply-value {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+
+    /* ROADMAP */
+    .roadmap {
+      padding: 120px 60px;
+      background: var(--midnight-soft);
+      border-top: 1px solid var(--border);
+    }
+    .roadmap-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .roadmap-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    .roadmap-grid::before {
+      content: '';
+      position: absolute;
+      top: 28px; left: 12.5%;
+      right: 12.5%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+    }
+    .roadmap-phase {
+      padding: 0 24px 0;
+      position: relative;
+      text-align: center;
+    }
+    .phase-dot {
+      width: 56px; height: 56px;
+      border: 1px solid var(--gold-dim);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 32px;
+      background: var(--midnight-deep);
+      position: relative;
+      z-index: 1;
+      transition: all 0.4s ease;
+    }
+    .phase-dot.active {
+      border-color: var(--gold);
+      background: var(--gold-glow);
+      box-shadow: 0 0 30px rgba(201,168,76,0.3);
+    }
+    .phase-dot-inner {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+    }
+    .phase-dot.active .phase-dot-inner {
+      background: var(--gold);
+    }
+    .phase-label {
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .phase-title {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 20px;
+      letter-spacing: 0.1em;
+    }
+    .phase-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .phase-items li {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(240,230,204,0.55);
+      line-height: 1.5;
+    }
+    .phase-items li::before {
+      content: '— ';
+      color: var(--gold-dim);
+    }
+
+    /* COMMUNITY */
+    .community {
+      padding: 120px 60px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .community-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .community-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .community-card {
+      padding: 28px 32px;
+      border: 1px solid var(--border);
+      background: var(--midnight-soft);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .community-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, rgba(201,168,76,0.12), transparent);
+      transition: width 0.4s ease;
+    }
+    .community-card:hover::before { width: 100%; }
+    .community-card:hover { border-color: var(--border-bright); transform: translateX(4px); }
+    .card-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+      filter: grayscale(0.3);
+    }
+    .card-info { flex: 1; }
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--gold-light);
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+    .card-arrow {
+      color: var(--gold-dim);
+      font-size: 18px;
+      transition: transform 0.3s;
+    }
+    .community-card:hover .card-arrow { transform: translateX(6px); color: var(--gold); }
+
+    /* MANIFESTO */
+    .manifesto {
+      padding: 160px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--midnight-deep);
+      border-top: 1px solid var(--border);
+    }
+    .manifesto::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .manifesto-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .manifesto-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 60px;
+    }
+    .manifesto-line {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(240,230,204,0.6);
+      line-height: 1.5;
+      transition: color 0.3s;
+    }
+    .manifesto-line:hover { color: var(--gold-light); }
+    .manifesto-line strong {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--gold);
+    }
+    .manifesto-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      background: linear-gradient(180deg, var(--gold-pale) 0%, var(--gold) 60%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .manifesto-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-style: italic;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 48px 60px;
+      border-top: 1px solid var(--border);
+      background: var(--midnight-deep);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+    .footer-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.3em;
+      color: var(--gold-dim);
+    }
+    .footer-mid {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(201,168,76,0.25);
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+    }
+    .footer-links a {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* KEYFRAMES */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* DECORATIVE LINE */
+    .deco-line {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      margin: 0 auto;
+    }
+
+    /* GOLD DIVIDER */
+    .gold-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+      margin: 0 60px;
+    }
+
+    /* DONUT CHART */
+    .donut-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .donut-center {
+      position: absolute;
+      text-align: center;
+    }
+    .donut-center-val {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gold-light);
+      display: block;
+    }
+    .donut-center-label {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    
+    /* ROADMAP STATUS SYSTEM */
+    .phase-dot.completed {
+      border-color: var(--gold-light);
+      background: rgba(201,168,76,0.18);
+      box-shadow: 0 0 25px rgba(201,168,76,0.25);
+    }
+
+    .phase-dot.completed .phase-dot-inner {
+      background: var(--gold-light);
+    }
+
+    .phase-dot.active {
+      border-color: var(--gold);
+      background: var(--gold-glow);
+      box-shadow: 0 0 30px rgba(201,168,76,0.35);
+      animation: roadmapPulse 2.2s ease-in-out infinite;
+    }
+
+    .phase-dot.active .phase-dot-inner {
+      background: var(--gold);
+    }
+
+    .phase-dot.future {
+      opacity: 0.45;
+      border-color: rgba(201,168,76,0.2);
+    }
+
+    .phase-dot.future .phase-dot-inner {
+      background: rgba(201,168,76,0.25);
+    }
+
+    @keyframes roadmapPulse {
+      0%,100% {
+        box-shadow: 0 0 12px rgba(201,168,76,0.2);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(201,168,76,0.6);
+        transform: scale(1.08);
+      }
+    }
+
+    /* PROGRESS LINE */
+    .roadmap-progress {
+      position: absolute;
+      top: 28px;
+      left: 12.5%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-light), var(--gold));
+      z-index: 0;
+      animation: progressGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes progressGlow {
+      0%,100% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(201,168,76,0.4);
+      }
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 80px; }
+      .hero-actions { flex-direction: column; gap: 14px; }
+      .vision { grid-template-columns: 1fr; gap: 50px; padding: 80px 24px; }
+      .pillars { padding: 80px 24px; }
+      .pillars-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+      .tokenomics { padding: 80px 24px; }
+      .token-layout { grid-template-columns: 1fr; gap: 50px; }
+      .token-chart { max-width: 280px; margin: 0 auto; }
+      .roadmap { padding: 80px 24px; }
+      .roadmap-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .roadmap-grid::before { display: none; }
+      .community { padding: 80px 24px; }
+      .community-grid { grid-template-columns: 1fr; gap: 50px; }
+      .manifesto { padding: 100px 24px; }
+      footer { padding: 32px 24px; flex-direction: column; gap: 24px; text-align: center; }
+      .stats-bar { padding: 24px; gap: 40px; flex-wrap: wrap; }
+      .gold-divider { margin: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <img src="logo.png" alt="KRASIV" class="nav-logo-img" onerror="this.style.display='none'">
+      <span class="nav-logo-text">KRASIV</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#tokenomics">Token</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#community">Community</a></li>
+    </ul>
+    <a href="#community" class="nav-cta"><span>Join Now</span></a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="hero-label">Luxury Meme Asset · Solana</div>
+
+    <div class="hero-logo-wrap">
+      <img src="logo.png" alt="KRASIV Logo" class="hero-logo" onerror="this.outerHTML='<div style=\'width:100px;height:100px;border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto;\'><span style=\'font-family:Cinzel,serif;font-size:11px;letter-spacing:0.2em;color:var(--gold);\''>K</span></div>'">
+    </div>
+
+    <h1 class="hero-title">KRASIV</h1>
+    <div class="hero-ticker">$KRSV · 1,000,000,000</div>
+    <p class="hero-tagline">Elegance, On Chain. A luxury meme asset built for the digitally aspirational.</p>
+
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Buy $KRSV</a>
+      <a href="#" class="btn-secondary">Read Whitepaper</a>
+    </div>
+
+    <div class="scroll-indicator">
+      <span class="scroll-text">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-value">1B</span>
+      <span class="stat-label">Total Supply</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value">0%</span>
+      <span class="stat-label">Transaction Tax</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value">SOL</span>
+      <span class="stat-label">Blockchain</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value">$KRSV</span>
+      <span class="stat-label">Ticker Symbol</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value">30D</span>
+      <span class="stat-label">Founder Lock</span>
+    </div>
+  </div>
+
+  <!-- VISION -->
+  <section class="vision" id="vision">
+    <div class="vision-left reveal">
+      <div class="section-label">Vision</div>
+      <h2 class="section-title">Not Noise.<br>Presence.</h2>
+      <p class="section-body">
+        Crypto markets have proven a recurring truth: attention creates narratives, narratives create communities, communities create markets. KRASIV exists to refine that cycle — not reject it.
+      </p>
+    </div>
+    <div class="vision-right reveal">
+      <div class="vision-quote">
+        <p>Markets reward noise. Culture rewards identity. Prestige rewards consistency.</p>
+      </div>
+      <p style="font-size:13px;font-weight:300;color:rgba(240,230,204,0.5);line-height:1.8;letter-spacing:0.04em;">
+        KRASIV introduces a new category: the Luxury Meme Asset. A digital asset designed not around chaos, but around presence. Not around imitation, but identity.
+      </p>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  
+  <div class="gold-divider"></div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <section class="vision">
+    <div class="vision-left reveal">
+      <div class="section-label">Executive Summary</div>
+      <h2 class="section-title">A Brand-First<br>Digital Asset</h2>
+      <p class="section-body">
+        KRASIV is a culturally driven digital asset positioned at the intersection of internet-native communities and premium brand aesthetics. Built on Solana, KRASIV embraces meme culture while applying disciplined luxury positioning, long-term brand evolution, and premium digital identity.
+      </p>
+    </div>
+    <div class="vision-right reveal">
+      <div class="vision-quote">
+        <p>KRASIV is not merely infrastructure. It is a symbol of digital prestige.</p>
+      </div>
+      <p style="font-size:13px;font-weight:300;color:rgba(240,230,204,0.5);line-height:1.8;letter-spacing:0.04em;">
+        Designed as a luxury meme asset, KRASIV introduces elegance, exclusivity, and aspirational participation into the digital asset market.
+      </p>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- MARKET CONTEXT -->
+  <section class="vision">
+    <div class="vision-left reveal">
+      <div class="section-label">Market Context</div>
+      <h2 class="section-title">Culture as<br>Financial Gravity</h2>
+      <p class="section-body">
+        Digital markets increasingly behave as cultural ecosystems. Communities, aesthetics, identity, and narrative distribution have become central drivers of market attention and participation.
+      </p>
+    </div>
+    <div class="vision-right reveal">
+      <div class="vision-quote">
+        <p>Premium identity can become a competitive advantage in internet-native culture.</p>
+      </div>
+      <p style="font-size:13px;font-weight:300;color:rgba(240,230,204,0.5);line-height:1.8;letter-spacing:0.04em;">
+        KRASIV enters the market as a differentiated symbolic asset focused on prestige, design confidence, and long-term identity retention.
+      </p>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- FUTURE UTILITY -->
+  <section class="pillars">
+    <div class="pillars-inner">
+      <div class="pillars-header reveal">
+        <div class="section-label" style="justify-content:center;">Future Utility</div>
+        <h2 class="section-title" style="text-align:center;">Evolution Framework</h2>
+        <p class="section-body" style="margin:0 auto;text-align:center;">
+          KRASIV launches as a meme-origin asset with potential expansion into premium digital participation experiences.
+        </p>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar reveal">
+          <div class="pillar-number">01</div>
+          <div class="pillar-title">Premium Access</div>
+          <p class="pillar-desc">Exclusive participation channels, digital experiences, and token-gated ecosystem access.</p>
+        </div>
+
+        <div class="pillar reveal">
+          <div class="pillar-number">02</div>
+          <div class="pillar-title">Governance</div>
+          <p class="pillar-desc">Selective community participation frameworks for future project direction exploration.</p>
+        </div>
+
+        <div class="pillar reveal">
+          <div class="pillar-number">03</div>
+          <div class="pillar-title">Collectibles</div>
+          <p class="pillar-desc">Exploration of premium digital collectibles and symbolic ownership experiences.</p>
+        </div>
+
+        <div class="pillar reveal">
+          <div class="pillar-number">04</div>
+          <div class="pillar-title">Collaborations</div>
+          <p class="pillar-desc">Selective partnerships aligned with KRASIV brand positioning and premium identity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- RISK DISCLOSURE -->
+  <section class="community">
+    <div class="community-grid">
+      <div class="reveal">
+        <div class="section-label">Risk Disclosure</div>
+        <h2 class="section-title">Important Notice</h2>
+        <p class="section-body">
+          KRASIV is a speculative digital asset. Participation involves substantial risk, including volatility, liquidity uncertainty, and regulatory variation across jurisdictions.
+        </p>
+      </div>
+
+      <div class="community-cards reveal">
+        <div class="community-card">
+          <div class="card-info">
+            <div class="card-title">No Financial Promises</div>
+            <div class="card-sub">No guarantees regarding price appreciation, listings, or partnerships.</div>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="card-info">
+            <div class="card-title">Meme Asset Nature</div>
+            <div class="card-sub">Meme-origin assets may experience extreme volatility and sentiment-driven valuation.</div>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="card-info">
+            <div class="card-title">Founder Disclosure</div>
+            <div class="card-sub">KRASIV is initially stewarded by an anonymous founder with transparent communication intentions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- BRAND PILLARS -->
+  <section class="pillars" id="brand">
+    <div class="pillars-inner">
+      <div class="pillars-header reveal">
+        <div class="section-label" style="justify-content:center;">Philosophy</div>
+        <h2 class="section-title" style="text-align:center;">Brand Pillars</h2>
+        <p class="section-body" style="margin:0 auto;text-align:center;">
+          Luxury is perception architecture. KRASIV applies premium brand language to crypto-native culture.
+        </p>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar reveal">
+          <div class="pillar-number">01</div>
+          <span class="pillar-icon">◆</span>
+          <div class="pillar-title">Elegance</div>
+          <p class="pillar-desc">Visual and communicative restraint. Every element intentional, nothing excessive.</p>
+        </div>
+        <div class="pillar reveal" style="transition-delay:0.1s">
+          <div class="pillar-number">02</div>
+          <span class="pillar-icon">◈</span>
+          <div class="pillar-title">Exclusivity</div>
+          <p class="pillar-desc">Community participation as belonging. Early adoption as prestige positioning.</p>
+        </div>
+        <div class="pillar reveal" style="transition-delay:0.2s">
+          <div class="pillar-number">03</div>
+          <span class="pillar-icon">◇</span>
+          <div class="pillar-title">Prestige</div>
+          <p class="pillar-desc">Brand signaling through aesthetic consistency across all touchpoints.</p>
+        </div>
+        <div class="pillar reveal" style="transition-delay:0.3s">
+          <div class="pillar-number">04</div>
+          <span class="pillar-icon">◉</span>
+          <div class="pillar-title">Aspiration</div>
+          <p class="pillar-desc">Ownership as symbolic participation in a premium digital identity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKENOMICS -->
+  <section class="tokenomics" id="tokenomics">
+    <div class="tokenomics-header reveal">
+      <div class="section-label">Structure</div>
+      <h2 class="section-title">Token Architecture</h2>
+    </div>
+    <div class="token-layout">
+      <div class="reveal">
+        <!-- SVG DONUT CHART -->
+        <div class="donut-container">
+          <svg viewBox="0 0 200 200" class="token-chart" style="max-width:320px;">
+            <!-- Community 50% -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="32"/>
+            <!-- Community 50% = 219.9 of 439.82 -->
+            <circle cx="100" cy="100" r="70" fill="none"
+              stroke="#c9a84c" stroke-width="32"
+              stroke-dasharray="219.9 439.82"
+              stroke-dashoffset="0"
+              transform="rotate(-90 100 100)" opacity="0.9"/>
+            <!-- Liquidity 20% -->
+            <circle cx="100" cy="100" r="70" fill="none"
+              stroke="#8a6a2a" stroke-width="32"
+              stroke-dasharray="87.96 439.82"
+              stroke-dashoffset="-219.9"
+              transform="rotate(-90 100 100)" opacity="0.85"/>
+            <!-- Founder 15% -->
+            <circle cx="100" cy="100" r="70" fill="none"
+              stroke="#e8c97a" stroke-width="32"
+              stroke-dasharray="65.97 439.82"
+              stroke-dashoffset="-307.86"
+              transform="rotate(-90 100 100)" opacity="0.8"/>
+            <!-- Growth 10% -->
+            <circle cx="100" cy="100" r="70" fill="none"
+              stroke="#4a3a14" stroke-width="32"
+              stroke-dasharray="43.98 439.82"
+              stroke-dashoffset="-373.83"
+              transform="rotate(-90 100 100)" opacity="0.75"/>
+            <!-- Utility 5% -->
+            <circle cx="100" cy="100" r="70" fill="none"
+              stroke="#f5e4b0" stroke-width="32"
+              stroke-dasharray="21.99 439.82"
+              stroke-dashoffset="-417.81"
+              transform="rotate(-90 100 100)" opacity="0.7"/>
+            <!-- Center circle -->
+            <circle cx="100" cy="100" r="48" fill="#060608"/>
+            <text x="100" y="94" text-anchor="middle" font-family="Cinzel, serif" font-size="13" fill="#c9a84c">1B</text>
+            <text x="100" y="112" text-anchor="middle" font-family="Jost, sans-serif" font-size="7" fill="rgba(201,168,76,0.45)" letter-spacing="2">KRSV</text>
+          </svg>
+        </div>
+        <!-- LEGEND -->
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:10px;height:10px;background:#c9a84c;border-radius:2px;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:rgba(240,230,204,0.6);flex:1;">Community Allocation</span>
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9a84c;">50%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:10px;height:10px;background:#8a6a2a;border-radius:2px;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:rgba(240,230,204,0.6);flex:1;">Liquidity Ecosystem</span>
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9a84c;">20%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:10px;height:10px;background:#e8c97a;border-radius:2px;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:rgba(240,230,204,0.6);flex:1;">Founder Allocation</span>
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9a84c;">15%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:10px;height:10px;background:#4a3a14;border-radius:2px;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:rgba(240,230,204,0.6);flex:1;">Growth Reserve</span>
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9a84c;">10%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:10px;height:10px;background:#f5e4b0;border-radius:2px;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:rgba(240,230,204,0.6);flex:1;">Future Utility Treasury</span>
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9a84c;">5%</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th>Allocation</th>
+              <th>%</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Community
+                <div class="token-bar"><div class="token-bar-fill" style="width:50%"></div></div>
+              </td>
+              <td>50%</td>
+              <td>500M</td>
+            </tr>
+            <tr>
+              <td>
+                Liquidity
+                <div class="token-bar"><div class="token-bar-fill" style="width:20%"></div></div>
+              </td>
+              <td>20%</td>
+              <td>200M</td>
+            </tr>
+            <tr>
+              <td>
+                Founder
+                <div class="token-bar"><div class="token-bar-fill" style="width:15%"></div></div>
+              </td>
+              <td>15%</td>
+              <td>150M</td>
+            </tr>
+            <tr>
+              <td>
+                Growth Reserve
+                <div class="token-bar"><div class="token-bar-fill" style="width:10%"></div></div>
+              </td>
+              <td>10%</td>
+              <td>100M</td>
+            </tr>
+            <tr>
+              <td>
+                Utility Treasury
+                <div class="token-bar"><div class="token-bar-fill" style="width:5%"></div></div>
+              </td>
+              <td>5%</td>
+              <td>50M</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="supply-card" style="margin-top:40px;">
+          <div>
+            <div class="supply-label">Total Supply</div>
+            <div class="supply-value" style="font-size:26px;margin-top:6px;">1,000,000,000</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="supply-label">Inflation</div>
+            <div class="supply-value" style="margin-top:6px;">None</div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding:20px 24px;border:1px solid rgba(201,168,76,0.12);background:rgba(201,168,76,0.03);">
+          <p style="font-size:11px;font-weight:300;color:rgba(240,230,204,0.4);line-height:1.7;letter-spacing:0.04em;">
+            Founder tokens are subject to a 30-day vesting commitment from launch, designed to reduce early sell pressure and align long-term stewardship.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  
+  <!--
+  =====================================================
+  HOW TO UPDATE ROADMAP STATUS
+  =====================================================
+
+  CURRENT STATUS:
+  Phase I  = active
+  Phase II = future
+  Phase III = future
+  Phase IV = future
+
+  TO MOVE ACTIVE STATUS TO PHASE II:
+
+  1. Change:
+     class="phase-dot active"
+     TO:
+     class="phase-dot completed"
+
+  2. Change Phase II:
+     class="phase-dot future"
+     TO:
+     class="phase-dot active"
+
+  3. Update progress line width:
+     style="width:38%;"
+
+  WIDTH REFERENCE:
+  Phase I  = 12%
+  Phase II = 38%
+  Phase III = 63%
+  Phase IV = 88%
+
+  =====================================================
+  -->
+
+
+  <!-- ROADMAP -->
+  <section class="roadmap" id="roadmap">
+    <div class="roadmap-inner">
+      <div class="roadmap-header reveal">
+        <div class="section-label" style="justify-content:center;">Evolution</div>
+        <h2 class="section-title" style="text-align:center;">The Roadmap</h2>
+      </div>
+      <div class="roadmap-grid">
+
+        <!--
+          ==========================================
+          ROADMAP CONTROL SYSTEM
+          ==========================================
+
+          STATUS OPTIONS:
+
+          completed = solid gold
+          active    = blinking/glowing current phase
+          future    = dimmed future phase
+
+          EXAMPLE:
+
+          <div class="phase-dot completed">
+          <div class="phase-dot active">
+          <div class="phase-dot future">
+
+          ==========================================
+          CHANGE CURRENT ACTIVE PHASE HERE
+          ==========================================
+        -->
+
+        <!-- Progress Line -->
+        <div class="roadmap-progress" style="width:12%;"></div>
+
+        <div class="roadmap-phase reveal">
+          <div class="phase-dot active"><div class="phase-dot-inner"></div></div>
+          <!-- CURRENT ACTIVE PHASE -->
+          <div class="phase-label">Phase I</div>
+          <div class="phase-title">Genesis</div>
+          <ul class="phase-items">
+            <li>Brand Launch</li>
+            <li>Whitepaper Publication</li>
+            <li>Website Deployment</li>
+            <li>X Activation</li>
+            <li>Telegram Formation</li>
+            <li>Initial Holder Growth</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase reveal" style="transition-delay:0.15s">
+          <div class="phase-dot future"><div class="phase-dot-inner"></div></div>
+          <!-- CHANGE TO ACTIVE LATER -->
+          <div class="phase-label">Phase II</div>
+          <div class="phase-title">Prestige</div>
+          <ul class="phase-items">
+            <li>Community Culture</li>
+            <li>Brand Language</li>
+            <li>Holder Expansion</li>
+            <li>Social Visibility</li>
+            <li>Organic Awareness</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase reveal" style="transition-delay:0.3s">
+          <div class="phase-dot future"><div class="phase-dot-inner"></div></div>
+          <div class="phase-label">Phase III</div>
+          <div class="phase-title">Expansion</div>
+          <ul class="phase-items">
+            <li>Partnership Exploration</li>
+            <li>Premium Mechanics</li>
+            <li>Gated Frameworks</li>
+            <li>Brand Extensions</li>
+            <li>Ecosystem Optionality</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase reveal" style="transition-delay:0.45s">
+          <div class="phase-dot future"><div class="phase-dot-inner"></div></div>
+          <div class="phase-label">Phase IV</div>
+          <div class="phase-title">Utility</div>
+          <ul class="phase-items">
+            <li>Gated Community Access</li>
+            <li>Governance Experiments</li>
+            <li>Digital Collectibles</li>
+            <li>Membership Mechanics</li>
+            <li>Ecosystem Collaboration</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section class="community" id="community">
+    <div class="community-grid">
+      <div class="reveal">
+        <div class="section-label">Join</div>
+        <h2 class="section-title">The Community</h2>
+        <p class="section-body">
+          KRASIV is a narrative-first digital community. The brand itself functions as a participation layer — sophistication, discipline, creativity.
+        </p>
+        <div style="margin-top:40px;padding:32px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(201,168,76,0.05) 0%,transparent 100%);">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:rgba(240,230,204,0.65);line-height:1.7;">
+            "KRASIV does not seek to imitate the past. It seeks to define a new aesthetic category."
+          </p>
+        </div>
+      </div>
+      <div class="community-cards reveal">
+        <a href="https://x.com/krasiv_global" class="community-card">
+          <span class="card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0,0,256,256">
+<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M11,4c-3.866,0 -7,3.134 -7,7v28c0,3.866 3.134,7 7,7h28c3.866,0 7,-3.134 7,-7v-28c0,-3.866 -3.134,-7 -7,-7zM13.08594,13h7.9375l5.63672,8.00977l6.83984,-8.00977h2.5l-8.21094,9.61328l10.125,14.38672h-7.93555l-6.54102,-9.29297l-7.9375,9.29297h-2.5l9.30859,-10.89648zM16.91406,15l14.10742,20h3.06445l-14.10742,-20z"></path></g></g>
+</svg>
+          </span>
+          <div class="card-info">
+            <div class="card-title">X/Twitter</div>
+            <div class="card-sub">Primary Narrative Channel</div>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a href="#" class="community-card">
+          <span class="card-icon">
+              <img width="48" height="48" src="https://img.icons8.com/fluency/48/telegram-app.png" alt="telegram-app"/>
+          </span>
+          <div class="card-info">
+            <div class="card-title">Telegram</div>
+            <div class="card-sub">Core Community Layer</div>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a href="#" class="community-card">
+  <span class="card-icon">
+    <img width="48" height="48" src="https://img.icons8.com/fluency/48/paper.png" alt="paper"/>
+  </span>
+  <div class="card-info">
+    <div class="card-title">Whitepaper</div>
+    <div class="card-sub">Full Documentation</div>
+  </div>
+  <span class="card-arrow">→</span>
+</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="manifesto-inner reveal">
+      <div class="manifesto-lines">
+        <div class="manifesto-line">Markets reward <strong>noise.</strong></div>
+        <div class="manifesto-line">Culture rewards <strong>identity.</strong></div>
+        <div class="manifesto-line">Prestige rewards <strong>consistency.</strong></div>
+      </div>
+      <div class="deco-line" style="margin-bottom:48px;"></div>
+      <div class="manifesto-title">KRASIV</div>
+      <div class="manifesto-sub">Elegance, On Chain.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">KRASIV · $KRSV</div>
+    <div class="footer-mid">© 2025 KRASIV. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#">Whitepaper</a>
+      <a href="#">Twitter</a>
+      <a href="#">Telegram</a>
+    </div>
+  </footer>
+
+  <script>
+    // CUSTOM CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Cursor scale on hover
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1.8)';
+        ring.style.borderColor = 'rgba(201,168,76,0.8)';
+        cursor.style.transform = 'translate(-50%,-50%) scale(0.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.borderColor = 'rgba(201,168,76,0.5)';
+        cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      });
+    });
+
+    // NAV SCROLL
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // REVEAL ON SCROLL
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, 0);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // SMOOTH ANCHOR
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
